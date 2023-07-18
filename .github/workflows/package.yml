@@ -6,7 +6,7 @@ on:
       - adds-code-to-enrich-data
 
 env:
-  REGISTRY: ${{ github.event.repository }}
+  REGISTRY: ${{ github.repository_owner }}/${{ github.event.repository.name }}
   API_IMAGE_NAME: trivy-extractor
   Version: ${{ github.ref_name }}
 
