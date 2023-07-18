@@ -1,4 +1,4 @@
-xsname: Release
+name: Release
 
 on:
   push:
