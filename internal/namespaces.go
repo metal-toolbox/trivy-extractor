@@ -17,6 +17,9 @@ func NewNamespaceTeam(f string) map[string]string {
 
 	for _, l := range strings.Split(string(b[:]), "\n") {
 		s := strings.Split(l, ",")
+		if len(s) != 2 {
+			continue
+		}
 		team := s[0]
 		ns := s[1]
 		m[ns] = team
