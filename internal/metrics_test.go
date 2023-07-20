@@ -19,7 +19,6 @@ func TestFakeMetrics(t *testing.T) {
 }
 
 func TestParseMetric(t *testing.T) {
-	t.Skip()
 	nsTeam := trivy.NewNamespaceTeam("../data/namespaces.csv")
 	vm := trivy.ParseMetrics(strings.Split(trivy.FakeMetricsData, "\n")[0], nsTeam)
 
@@ -28,7 +27,7 @@ func TestParseMetric(t *testing.T) {
 	}
 
 	expected := []string{
-		"activate",
+		"app",
 		"",
 		"ghcr.io",
 		"app/app",
@@ -36,17 +35,17 @@ func TestParseMetric(t *testing.T) {
 		"replicaset-app-1-app",
 		"app-1",
 		"ReplicaSet",
-		"app",
+		"app-1",
 		"Critical",
-		"Unknown",
+		"TEAM 1",
 	}
 
 	for i := range vm.Labels {
+		t.Logf(vm.Labels[i])
 		if vm.Labels[i] != expected[i] {
 			t.Fatalf("labels are not correct. actual %s Expected %s ", vm.Labels, expected)
 		}
 	}
-
 	var expectedResult float64 = 1
 	if float64(expectedResult) != vm.Value {
 		t.Fatalf("Result incorrect, actual %f, expected %f", vm.Value, expectedResult)
