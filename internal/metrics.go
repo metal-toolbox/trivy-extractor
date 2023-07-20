@@ -89,7 +89,7 @@ func ParseMetrics(line string, nsTeam map[string]string) VulnMetrics {
 			myLabels = append(myLabels, entryMatches[1])
 		}
 
-		if l == "exported_namespace" {
+		if l == "namespace" {
 			t, ok := nsTeam[entryMatches[1]]
 			if !ok {
 				team = "Unknown"
