@@ -61,7 +61,7 @@ var Labels []string = []string{
 	"image_repository",
 	"image_tag",
 	"name",
-	"exported_namespace",
+	"namespace",
 	"resource_kind",
 	"resource_name",
 	"severity",
