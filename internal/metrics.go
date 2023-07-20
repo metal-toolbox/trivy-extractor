@@ -61,7 +61,7 @@ var Labels []string = []string{
 	"image_repository",
 	"image_tag",
 	"name",
-	"namespace",
+	"exported_namespace",
 	"resource_kind",
 	"resource_name",
 	"severity",
@@ -89,7 +89,7 @@ func ParseMetrics(line string, nsTeam map[string]string) VulnMetrics {
 			myLabels = append(myLabels, entryMatches[1])
 		}
 
-		if l == "namespace" {
+		if l == "exported_namespace" {
 			t, ok := nsTeam[entryMatches[1]]
 			if !ok {
 				team = "Unknown"
