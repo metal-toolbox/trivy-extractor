@@ -3,6 +3,7 @@ package trivy
 import (
 	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -114,7 +115,7 @@ func Report(ms MetricService, pp PrometheusMetricsService, quit chan struct{}, t
 			case <-ticker.C:
 				lines, err := ms.Metrics()
 				if err != nil {
-					fmt.Printf("error calling metrics. %s\n", err)
+					log.Printf("error calling metrics. %s\n", err)
 				}
 				for _, l := range lines {
 					vm := ParseMetrics(l, nsTeam)
