@@ -116,6 +116,7 @@ func Report(ms MetricService, pp PrometheusMetricsService, quit chan struct{}, t
 				lines, err := ms.Metrics()
 				if err != nil {
 					log.Printf("error calling metrics. %s\n", err)
+					continue
 				}
 				for _, l := range lines {
 					vm := ParseMetrics(l, nsTeam)
