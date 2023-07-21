@@ -63,6 +63,8 @@ type VulnMetrics struct {
 	Value  float64
 }
 
+var valueRegex *regexp.Regexp = regexp.MustCompile(`} (?P<value>\d+)`)
+
 func ParseMetrics(line string, nsTeam map[string]string) VulnMetrics {
 	myLabels := []string{}
 	team := ""
@@ -93,8 +95,7 @@ func ParseMetrics(line string, nsTeam map[string]string) VulnMetrics {
 
 	myLabels = append(myLabels, team)
 
-	re := regexp.MustCompile(`} (?P<value>\d+)`)
-	entryMatches := re.FindStringSubmatch(line)
+	entryMatches := valueRegex.FindStringSubmatch(line)
 	var result float64
 	if entryMatches == nil {
 		return VulnMetrics{}
