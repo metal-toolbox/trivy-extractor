@@ -1,6 +1,7 @@
 package trivy_test
 
 import (
+	_ "embed"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -9,8 +10,18 @@ import (
 	trivy "github.com/metal-toolbox/trivy-extractor/internal"
 )
 
+type FakeMetricsServicer struct {
+}
+
+//go:embed test_data/metrics.txt
+var FakeMetricsData string
+
+func (f *FakeMetricsServicer) Metrics() ([]string, error) {
+	return strings.Split(FakeMetricsData, "\n"), nil
+}
+
 func TestFakeMetrics(t *testing.T) {
-	fm := trivy.FakeMetricsServicer{}
+	fm := FakeMetricsServicer{}
 	m, _ := fm.Metrics()
 
 	if len(m) != 7 {
@@ -20,7 +31,7 @@ func TestFakeMetrics(t *testing.T) {
 
 func TestParseMetric(t *testing.T) {
 	nsTeam := trivy.NewNamespaceTeam("../data/namespaces.csv")
-	vm := trivy.ParseMetrics(strings.Split(trivy.FakeMetricsData, "\n")[0], nsTeam)
+	vm := trivy.ParseMetrics(strings.Split(FakeMetricsData, "\n")[0], nsTeam)
 
 	if len(vm.Labels) != len(trivy.Labels)+1 {
 		t.Fatalf("should have equal label lengths. actual %d, expected %d", len(vm.Labels), len(trivy.Labels))
@@ -66,7 +77,7 @@ func TestReport(t *testing.T) {
 
 	nsTeam := trivy.NewNamespaceTeam(p)
 	ch := make(chan struct{})
-	fm := &trivy.FakeMetricsServicer{}
+	fm := &FakeMetricsServicer{}
 	ps := &FakePromServicer{}
 
 	trivy.Report(fm, ps, ch, 10*time.Millisecond, nsTeam)

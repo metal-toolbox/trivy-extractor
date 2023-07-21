@@ -1,7 +1,6 @@
 package trivy
 
 import (
-	_ "embed"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -21,15 +20,6 @@ const (
 
 type MetricService interface {
 	Metrics() ([]string, error)
-}
-type FakeMetricsServicer struct {
-}
-
-//go:embed test_data/metrics.txt
-var FakeMetricsData string
-
-func (f *FakeMetricsServicer) Metrics() ([]string, error) {
-	return strings.Split(FakeMetricsData, "\n"), nil
 }
 
 type MetricsServicer struct {

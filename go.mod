@@ -2,10 +2,7 @@ module github.com/metal-toolbox/trivy-extractor
 
 go 1.20
 
-require (
-	github.com/prometheus/client_golang v1.15.1
-	gopkg.in/yaml.v3 v3.0.1
-)
+require github.com/prometheus/client_golang v1.15.1
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
