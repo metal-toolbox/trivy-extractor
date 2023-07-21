@@ -16,14 +16,14 @@ func main() {
 
 	handleMetrics(context.Background())
 
-	ch := make(chan struct{})
+	quitCh := make(chan struct{})
 	ms := &trivy.MetricsServicer{}
 	ps := trivy.NewPrometheusMetricsService()
 	nsTeam := trivy.NewNamespaceTeam("/data/namespaces.csv")
-	trivy.Report(ms, ps, ch, time.Second*15, nsTeam)
+	trivy.Report(ms, ps, quitCh, time.Second*15, nsTeam)
 
 	<-cancelChan
-	ch <- struct{}{}
+	quitCh <- struct{}{}
 }
 
 func handleMetrics(ctx context.Context) {
