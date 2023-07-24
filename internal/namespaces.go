@@ -2,14 +2,14 @@ package trivy
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 )
 
 func NewNamespaceTeam(f string) map[string]string {
 	m := make(map[string]string)
 
-	b, err := ioutil.ReadFile(f)
+	b, err := os.ReadFile(f)
 	if err != nil {
 		fmt.Println("couldnt find namespaces file. using empty namespaces")
 		return m
