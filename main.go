@@ -13,17 +13,17 @@ import (
 
 func main() {
 	cancelChan := make(chan os.Signal, 1)
-
 	handleMetrics(context.Background())
 
 	quitCh := make(chan struct{})
-	ms := &trivy.MetricsServicer{}
-	ps := trivy.NewPrometheusMetricsService()
-	nsTeam := trivy.NewNamespaceTeam("/data/namespaces.csv")
-	trivy.Report(ms, ps, quitCh, time.Second*15, nsTeam)
-
+	trivy.Report(
+		&trivy.MetricsServicer{},
+		trivy.NewPrometheusMetricsService(),
+		quitCh,
+		time.Second*15,
+		trivy.NewNamespaceTeam("/data/namespaces.csv"),
+	)
 	<-cancelChan
-	quitCh <- struct{}{}
 }
 
 func handleMetrics(ctx context.Context) {
