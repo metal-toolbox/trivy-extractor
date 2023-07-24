@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// NewNamespaceTeam reads csv file (team name,namespace)
 func NewNamespaceTeam(f string) map[string]string {
 	m := make(map[string]string)
 
@@ -15,7 +16,7 @@ func NewNamespaceTeam(f string) map[string]string {
 		return m
 	}
 
-	for _, l := range strings.Split(string(b[:]), "\n") {
+	for _, l := range strings.Split(string(b), "\n") {
 		s := strings.Split(l, ",")
 		if len(s) != 2 {
 			continue
