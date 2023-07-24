@@ -1,6 +1,7 @@
 package trivy_test
 
 import (
+	"context"
 	_ "embed"
 	"path/filepath"
 	"strings"
@@ -31,7 +32,7 @@ func TestFakeMetrics(t *testing.T) {
 
 func TestParseMetric(t *testing.T) {
 	nsTeam := trivy.NewNamespaceTeam("../data/namespaces.csv")
-	vm := trivy.ParseMetrics(strings.Split(FakeMetricsData, "\n")[0], nsTeam)
+	vm, _ := trivy.ParseMetrics(strings.Split(FakeMetricsData, "\n")[0], nsTeam)
 
 	if len(vm.Labels) != len(trivy.Labels)+1 {
 		t.Fatalf("should have equal label lengths. actual %d, expected %d", len(vm.Labels), len(trivy.Labels))
@@ -72,17 +73,19 @@ func (p *FakePromServicer) SetTeamNamespaceVulns(vm trivy.VulnMetrics) {
 }
 
 func TestReport(t *testing.T) {
-	t.Skip()
 	p, _ := filepath.Abs("../data/namespaces.csv")
 
 	nsTeam := trivy.NewNamespaceTeam(p)
-	ch := make(chan struct{})
 	fm := &FakeMetricsServicer{}
 	ps := &FakePromServicer{}
 
-	trivy.Report(fm, ps, ch, 10*time.Millisecond, nsTeam)
-	time.Sleep(11 * time.Millisecond)
-	ch <- struct{}{}
+	ctx, can := context.WithCancel(context.Background())
+	go (func() {
+		trivy.Report(fm, ps, ctx, 10*time.Millisecond, nsTeam)
+	})()
+
+	time.Sleep(15 * time.Millisecond)
+	can()
 	if len(ps.Calls) != 5 {
 		t.Fatalf("should have processed 5 but processed only %d", len(ps.Calls))
 	}

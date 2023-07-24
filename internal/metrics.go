@@ -1,6 +1,7 @@
 package trivy
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -65,12 +66,12 @@ type VulnMetrics struct {
 
 var valueRegex *regexp.Regexp = regexp.MustCompile(`} (?P<value>\d+)`)
 
-func ParseMetrics(line string, nsTeam map[string]string) VulnMetrics {
+func ParseMetrics(line string, nsTeam map[string]string) (VulnMetrics, error) {
 	myLabels := []string{}
 	team := ""
 
 	if !strings.HasPrefix(line, "trivy_image_vulnerabilities") {
-		return VulnMetrics{}
+		return VulnMetrics{}, nil
 	}
 
 	for _, l := range Labels {
@@ -98,40 +99,43 @@ func ParseMetrics(line string, nsTeam map[string]string) VulnMetrics {
 	entryMatches := valueRegex.FindStringSubmatch(line)
 	var result float64
 	if entryMatches == nil {
-		return VulnMetrics{}
+		return VulnMetrics{}, nil
 	}
 	result, err := strconv.ParseFloat(entryMatches[1], 64)
 	if err != nil {
-		return VulnMetrics{}
+		return VulnMetrics{}, err
 	}
 
-	return VulnMetrics{myLabels, result}
+	return VulnMetrics{myLabels, result}, nil
 }
 
-func Report(ms MetricService, pp PrometheusMetricsService, quit chan struct{}, tickerTime time.Duration, nsTeam map[string]string) {
+func Report(ms MetricService, pp PrometheusMetricsService, ctx context.Context, tickerTime time.Duration, nsTeam map[string]string) error {
 	ticker := time.NewTicker(tickerTime)
-	go func() {
-		for {
-			select {
-			case <-ticker.C:
-				lines, err := ms.Metrics()
+	for {
+		select {
+		case <-ticker.C:
+			lines, err := ms.Metrics()
+			if err != nil {
+				log.Printf("error calling metrics. %s\n", err)
+				return err
+			}
+			for _, l := range lines {
+				vm, err := ParseMetrics(l, nsTeam)
+
 				if err != nil {
-					log.Printf("error calling metrics. %s\n", err)
-					continue
-				}
-				for _, l := range lines {
-					vm := ParseMetrics(l, nsTeam)
-					if len(vm.Labels) > 0 {
-						pp.SetTeamNamespaceVulns(vm)
-					}
+					return err
 				}
 
-			case <-quit:
-				ticker.Stop()
-				return
+				if len(vm.Labels) > 0 {
+					pp.SetTeamNamespaceVulns(vm)
+				}
 			}
+
+		case <-ctx.Done():
+			ticker.Stop()
+			return nil
 		}
-	}()
+	}
 }
 
 type PrometheusMetricsService interface {

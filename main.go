@@ -5,25 +5,33 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	trivy "github.com/metal-toolbox/trivy-extractor/internal"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
-	cancelChan := make(chan os.Signal, 1)
-	handleMetrics(context.Background())
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	quitCh := make(chan struct{})
-	trivy.Report(
-		&trivy.MetricsServicer{},
-		trivy.NewPrometheusMetricsService(),
-		quitCh,
-		time.Second*15,
-		trivy.NewNamespaceTeam("/data/namespaces.csv"),
-	)
-	<-cancelChan
+	handleMetrics(ctx)
+
+	eg, groupCtx := errgroup.WithContext(ctx)
+	eg.Go(func() error {
+		return trivy.Report(
+			&trivy.MetricsServicer{},
+			trivy.NewPrometheusMetricsService(),
+			groupCtx,
+			time.Second*15,
+			trivy.NewNamespaceTeam("/data/namespaces.csv"),
+		)
+	})
+
+	eg.Wait()
 }
 
 func handleMetrics(ctx context.Context) {
