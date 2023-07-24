@@ -12,7 +12,7 @@ COPY main.go .
 
 RUN go build -o trivy-extractor
 
-FROM scratch
+FROM ubuntu:22.04
 COPY --from=builder /go/src/trivy-extractor/trivy-extractor /usr/bin/trivy-extractor
 COPY --from=builder /go/src/trivy-extractor/data /data
 
