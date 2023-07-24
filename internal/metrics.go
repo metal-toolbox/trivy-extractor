@@ -119,6 +119,8 @@ func Report(ms MetricService, pp PrometheusMetricsService, ctx context.Context, 
 				log.Printf("error calling metrics. %s\n", err)
 				return err
 			}
+
+			log.Printf("trivy.Report: received %d lines of metrics", len(lines))
 			for _, l := range lines {
 				vm, err := ParseMetrics(l, nsTeam)
 

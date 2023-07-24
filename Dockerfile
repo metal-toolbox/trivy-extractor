@@ -10,10 +10,12 @@ COPY data ./data
 COPY internal ./internal
 COPY main.go .
 
-RUN go build -o trivy-extractor
+RUN CGO_ENABLED=0 go build -o trivy-extractor
 
-FROM ubuntu:22.04
+
+FROM  gcr.io/distroless/static:nonroot
 COPY --from=builder /go/src/trivy-extractor/trivy-extractor /usr/bin/trivy-extractor
-COPY --from=builder /go/src/trivy-extractor/data /data
+
+USER 65532:65532
 
 CMD [ "/usr/bin/trivy-extractor" ]
