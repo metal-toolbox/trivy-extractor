@@ -3,7 +3,7 @@ package trivy
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"regexp"
@@ -21,15 +21,15 @@ const (
 )
 
 type MetricService interface {
-	Metrics() ([]string, error)
+	Metrics(ctx context.Context) ([]string, error)
 }
 
 type MetricsServicer struct {
 }
 
-func (m *MetricsServicer) Metrics() ([]string, error) {
+func (m *MetricsServicer) Metrics(ctx context.Context) ([]string, error) {
 	requestURL := fmt.Sprintf("http://trivy-operator.trivy-operator:%d/metrics", 8080)
-	req, err := http.NewRequest(http.MethodGet, requestURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, requestURL, nil)
 	if err != nil {
 		return []string{}, err
 	}
@@ -39,7 +39,7 @@ func (m *MetricsServicer) Metrics() ([]string, error) {
 		return []string{}, err
 	}
 
-	resBody, err := ioutil.ReadAll(res.Body)
+	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
 		return []string{}, err
 	}
@@ -114,7 +114,7 @@ func Report(ms MetricService, pp PrometheusMetricsService, ctx context.Context, 
 	for {
 		select {
 		case <-ticker.C:
-			lines, err := ms.Metrics()
+			lines, err := ms.Metrics(ctx)
 			if err != nil {
 				log.Printf("error calling metrics. %s\n", err)
 				return err

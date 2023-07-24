@@ -17,13 +17,13 @@ type FakeMetricsServicer struct {
 //go:embed test_data/metrics.txt
 var FakeMetricsData string
 
-func (f *FakeMetricsServicer) Metrics() ([]string, error) {
+func (f *FakeMetricsServicer) Metrics(context.Context) ([]string, error) {
 	return strings.Split(FakeMetricsData, "\n"), nil
 }
 
 func TestFakeMetrics(t *testing.T) {
 	fm := FakeMetricsServicer{}
-	m, _ := fm.Metrics()
+	m, _ := fm.Metrics(context.TODO())
 
 	if len(m) != 7 {
 		t.Fatalf("there should be %d metrics lines, there is only %d", 7, len(m))
