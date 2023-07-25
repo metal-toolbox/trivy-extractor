@@ -6,7 +6,6 @@ WORKDIR /go/src/trivy-extractor
 COPY go.mod go.sum ./
 RUN go mod download && go mod verify
 
-COPY data ./data
 COPY internal ./internal
 COPY main.go .
 
