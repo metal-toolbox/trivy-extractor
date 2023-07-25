@@ -38,6 +38,7 @@ func (m *MetricsServicer) Metrics(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return []string{}, err
 	}
+	defer res.Body.Close()
 
 	resBody, err := io.ReadAll(res.Body)
 	if err != nil {
