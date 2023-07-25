@@ -114,6 +114,7 @@ func ParseMetrics(line string, nsTeam map[string]string) (VulnMetrics, error) {
 
 func Report(ms MetricService, pp PrometheusMetricsService, ctx context.Context, tickerTime time.Duration, nsTeam map[string]string) error {
 	ticker := time.NewTicker(tickerTime)
+	defer ticker.Stop()
 	for {
 		select {
 		case <-ticker.C:
@@ -136,7 +137,6 @@ func Report(ms MetricService, pp PrometheusMetricsService, ctx context.Context, 
 			}
 
 		case <-ctx.Done():
-			ticker.Stop()
 			return nil
 		}
 	}
