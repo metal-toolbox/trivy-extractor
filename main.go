@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"time"
 
-	trivy "github.com/metal-toolbox/trivy-extractor/internal"
+	"github.com/metal-toolbox/trivy-extractor/internal/trivy"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"golang.org/x/sync/errgroup"
 )

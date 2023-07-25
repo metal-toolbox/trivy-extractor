@@ -3,11 +3,11 @@ package trivy_test
 import (
 	"testing"
 
-	trivy "github.com/metal-toolbox/trivy-extractor/internal"
+	"github.com/metal-toolbox/trivy-extractor/internal/trivy"
 )
 
 func TestNamespace(t *testing.T) {
-	m := trivy.NewNamespaceTeam("../data/namespaces.csv")
+	m := trivy.NewNamespaceTeam("data/namespaces.csv")
 
 	tm, ok := m["app-1"]
 	if !ok {

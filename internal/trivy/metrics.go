@@ -84,7 +84,9 @@ func ParseMetrics(line string, nsTeam map[string]string) (VulnMetrics, error) {
 		}
 
 		if l == "namespace" {
+
 			t, ok := nsTeam[entryMatches[1]]
+
 			if !ok {
 				team = "Unknown"
 			} else {
@@ -120,7 +122,6 @@ func Report(ms MetricService, pp PrometheusMetricsService, ctx context.Context, 
 				return err
 			}
 
-			log.Printf("trivy.Report: received %d lines of metrics", len(lines))
 			for _, l := range lines {
 				vm, err := ParseMetrics(l, nsTeam)
 

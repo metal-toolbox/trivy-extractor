@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	trivy "github.com/metal-toolbox/trivy-extractor/internal"
+	"github.com/metal-toolbox/trivy-extractor/internal/trivy"
 )
 
 type FakeMetricsServicer struct {
@@ -31,7 +31,7 @@ func TestFakeMetrics(t *testing.T) {
 }
 
 func TestParseMetric(t *testing.T) {
-	nsTeam := trivy.NewNamespaceTeam("../data/namespaces.csv")
+	nsTeam := trivy.NewNamespaceTeam("data/namespaces.csv")
 	vm, _ := trivy.ParseMetrics(strings.Split(FakeMetricsData, "\n")[0], nsTeam)
 
 	if len(vm.Labels) != len(trivy.Labels)+1 {
