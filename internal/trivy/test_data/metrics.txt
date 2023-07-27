@@ -1,0 +1,6 @@
+trivy_image_vulnerabilities{container_name="app",image_digest="",image_registry="ghcr.io",image_repository="app/app",image_tag="v1",name="replicaset-app-1-app",namespace="app-1",resource_kind="ReplicaSet",resource_name="app-1",severity="Critical"} 1
+trivy_image_vulnerabilities{container_name="app",image_digest="",image_registry="ghcr.io",image_repository="app/app",image_tag="v1",name="replicaset-app-1-app",namespace="app-1",resource_kind="ReplicaSet",resource_name="app-1",severity="High"} 4
+trivy_image_vulnerabilities{container_name="app",image_digest="",image_registry="ghcr.io",image_repository="app/app",image_tag="v1",name="replicaset-app-1-app",namespace="app-1",resource_kind="ReplicaSet",resource_name="app-1",severity="Low"} 77
+trivy_image_vulnerabilities{container_name="app",image_digest="",image_registry="ghcr.io",image_repository="app/app",image_tag="v1",name="replicaset-app-1-app",namespace="app-1",resource_kind="ReplicaSet",resource_name="app-1",severity="Medium"} 103
+trivy_image_vulnerabilities{container_name="app",image_digest="",image_registry="ghcr.io",image_repository="app/app",image_tag="v1",name="replicaset-app-1-app",namespace="app-1",resource_kind="ReplicaSet",resource_name="app-1",severity="Unknown"} 0
+blah blah should not parse this
