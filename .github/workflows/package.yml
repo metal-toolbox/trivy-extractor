@@ -45,3 +45,28 @@ jobs:
           file: Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.API_IMAGE_NAME }}:${{ env.Version}}
           labels: ${{ steps.meta-api.outputs.labels }}
+
+    outputs:
+      tags: ${{ steps.meta-api.outputs.tags }}
+
+  sign:
+    needs: build-and-push-image
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      id-token: write
+
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref_name }}
+
+      - uses: sigstore/cosign-installer@main
+
+      - run: cosign sign -y -r ${TAGS}
+        env:
+          TAGS: ${{needs.build-and-push-image.outputs.tags}}
